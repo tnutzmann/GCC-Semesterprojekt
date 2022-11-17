@@ -11,6 +11,7 @@ def home():
 def home():
     return template('home2.tpl', name='BottleTube Home', content='Bla')
 
+
 @route('/hello')
 def index():
     return '<b>Hello world</b>!'
