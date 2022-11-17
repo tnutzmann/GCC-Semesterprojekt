@@ -9,7 +9,7 @@ def home():
 
 @route('/home2')
 def home():
-    return template('home2.tpl', name='BottleTube Home', content='Bla')
+    return template('base.tpl', title='BottleTube Home', content='Bla')
 
 
 @route('/hello')
