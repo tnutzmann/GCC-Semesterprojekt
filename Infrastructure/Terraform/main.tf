@@ -7,16 +7,18 @@ terraform {
   }
 }
 
+#TODO: AMI ROLE
+
 locals {
-  myBucket = "tonys-bottletube-bucket"
   my_aws_access_key = ""
   my_aws_secret_key = ""
-  my_aws_token = ""
-  my_aws_ssh_key = ""
+  my_aws_token      = ""
+  my_aws_ssh_key    = "Mac-Key"
+  
+  myBucket          = "tonys-bottletube-bucket"
 
-  server_ami_ID = ""
-  server_sec_group = [""]
-  server_subnet_id = ""
+  server_ami_ID    = "ami-09d60d07ecd5c4424"
+  server_sec_group = ["sg-0a763b59f550d1d80"]
 }
 
 provider "aws" {
@@ -29,6 +31,7 @@ provider "aws" {
 # erstellt einen S3 Bucket
 resource "aws_s3_bucket" "bottletube_bucket" {
   bucket = local.myBucket
+  force_destroy = true
 }
 
 # setzt die ACL des Buckets auf 'public read'
@@ -42,7 +45,7 @@ resource "aws_s3_object" "assets_upload" {
   for_each = fileset("../images/", "**")
 
   bucket       = local.myBucket
-  key          = "images/${each.value}"
+  key          = "user_uploads/${each.value}"
   source       = "../images/${each.value}"
   content_type = "image/jpg"
   etag         = filemd5("../images/${each.value}")
@@ -60,7 +63,6 @@ resource "aws_instance" "bottletube_ec2" {
   instance_type          = "t3.nano"
   key_name               = local.my_aws_ssh_key
   vpc_security_group_ids = local.server_sec_group
-  subnet_id              = local.server_subnet_id
   monitoring             = false
 }
 
