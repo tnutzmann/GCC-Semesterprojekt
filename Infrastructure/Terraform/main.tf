@@ -37,7 +37,7 @@ resource "aws_s3_bucket_acl" "bottletube_bucket_acl" {
   acl    = "public-read"
 }
 
-# Lädt alles hoch was in assets liegt
+# Lädt alles hoch was in images liegt
 resource "aws_s3_object" "assets_upload" {
   for_each = fileset("../images/", "**")
 
