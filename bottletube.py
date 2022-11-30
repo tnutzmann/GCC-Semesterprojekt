@@ -8,9 +8,9 @@ import requests
 from bottle import route, run, template, request
 from boto3 import resource
 
-HOSTNAME = 'localhost'
-PORT = 8080
-BUCKET_NAME = 'bottletube'  # Replace with your bucket name
+HOSTNAME = 'ec2-44-204-165-55.compute-1.amazonaws.com'
+PORT = 80
+BUCKET_NAME = 'tonys-bottletube-bucket'  # Replace with your bucket name
 SAVE_PATH = '/tmp/images/'
 
 
@@ -18,10 +18,10 @@ SAVE_PATH = '/tmp/images/'
 @route('/')
 def home():
     # SQL Query goes here later, now dummy data only
-    items = ({'filename': 'images/coffee.jpg',
+    items = ({'filename': 'user_uploads/coffee.jpg',
               'category': 'Things'
               },
-             {'filename': 'images/gladiolus.jpg',
+             {'filename': 'user_uploads/gladiolus.jpg',
               'category': 'Plant'
               },
              )
