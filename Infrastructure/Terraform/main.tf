@@ -12,6 +12,11 @@ locals {
   my_aws_access_key = ""
   my_aws_secret_key = ""
   my_aws_token = ""
+  my_aws_ssh_key = ""
+
+  server_ami_ID = ""
+  server_sec_group = [""]
+  server_subnet_id = ""
 }
 
 provider "aws" {
@@ -54,11 +59,12 @@ resource "aws_instance" "bottletube_ec2" {
   ami                    = local.server_ami_ID
   instance_type          = "t3.nano"
   key_name               = local.my_aws_ssh_key
-  vpc_security_group_ids = [local.server_sec_group]
+  vpc_security_group_ids = local.server_sec_group
   subnet_id              = local.server_subnet_id
   monitoring             = false
 }
 
+/*
 # Datenbank erstllen (POSTGRESQL)
 resource "aws_db_instance" "bottletube_db" {
   allocated_storage      = 20
@@ -71,3 +77,4 @@ resource "aws_db_instance" "bottletube_db" {
   skip_final_snapshot    = true
   vpc_security_group_ids = [local.db_sec_group]
 }
+*/
