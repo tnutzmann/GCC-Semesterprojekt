@@ -18,11 +18,11 @@ SAVE_PATH = '/tmp/images/'
 @route('/')
 def home():
     # SQL Query goes here later, now dummy data only
-    items = ({'filename': 'user_uploads/camel.jpg',
-              'category': 'Animals'
+    items = ({'filename': 'images/coffee.jpg',
+              'category': 'Things'
               },
-             {'filename': 'user_uploads/cat.jpg',
-              'category': 'Animals'
+             {'filename': 'images/gladiolus.jpg',
+              'category': 'Plant'
               },
              )
     return template('home.tpl', name='BoTube Home', items=items)
