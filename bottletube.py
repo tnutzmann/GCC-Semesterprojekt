@@ -3,12 +3,13 @@
 import time
 import os
 import uuid
-
 import requests
 
 from bottle import route, run, template, request
 from boto3 import resource
 
+HOSTNAME = 'localhost'
+PORT = 8080
 BUCKET_NAME = 'bottletube'  # Replace with your bucket name
 SAVE_PATH = '/tmp/images/'
 
@@ -89,5 +90,5 @@ if __name__ == '__main__':
 
     # Needs to be customized
     # run(host='your_public_dns_name',
-    run(host='ec2-3-227-1-45.compute-1.amazonaws.com',
-        port=80)
+    run(host=HOSTNAME,
+        port=PORT)
