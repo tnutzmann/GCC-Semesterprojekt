@@ -4,27 +4,26 @@ import time
 import os
 import uuid
 import requests
+import psycopg2
+import json
 
 from bottle import route, run, template, request
-from boto3 import resource
+from boto3 import resource, session
 
-HOSTNAME = 'ec2-44-204-165-55.compute-1.amazonaws.com'
+HOSTNAME = ''
 PORT = 80
 BUCKET_NAME = 'tonys-bottletube-bucket'  # Replace with your bucket name
 SAVE_PATH = '/tmp/images/'
-
+secret_name = "RDS-Secrets"
 
 @route('/home')
 @route('/')
 def home():
     # SQL Query goes here later, now dummy data only
-    items = ({'filename': 'user_uploads/coffee.jpg',
-              'category': 'Things'
-              },
-             {'filename': 'user_uploads/gladiolus.jpg',
-              'category': 'Plant'
-              },
-             )
+    items = []
+    cursor.execute('SELECT * FROM image_uploads ORDER BY id')
+    for record in cursor.fetchall():
+        items.append({'id': record[0], 'filename': record[1], 'category': record[2]})
     return template('home.tpl', name='BoTube Home', items=items)
 
 
@@ -75,6 +74,8 @@ def do_upload_post():
                                                ACL='public-read')
 
     # Write to DB
+    cursor.execute(f"INSERT INTO image_uploads (url, category) VALUES ('user_uploads/{save_filename}', '{category}');")
+    connection.commit()
     # some code has to go here later
 
     # Return template
@@ -82,8 +83,17 @@ def do_upload_post():
 
 
 if __name__ == '__main__':
-    # Connect to DB
-    # some code has to go here
+    sm_session = session.Session()
+    client = sm_session.client(service_name='secretsmanager', region_name='us-east-1')
+
+    secrets = json.loads(client.get_secret_value(SecretId=secret_name).get('SecretString'))
+
+    connection = psycopg2.connect(user=secrets['User'], host=secrets['Host'], password=secrets['Password'],
+                                  database=secrets['DBName'])
+
+    cursor = connection.cursor()
+    cursor.execute("SET SCHEMA 'bottle_tube';")
+    connection.commit()
 
     # Connect to S3
     s3_resource = resource('s3', region_name='us-east-1')
