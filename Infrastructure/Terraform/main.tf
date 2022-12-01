@@ -14,10 +14,11 @@ locals {
   my_aws_secret_key = ""
   my_aws_token      = ""
   my_aws_ssh_key    = "Mac-Key"
-  
-  myBucket          = "tonys-bottletube-bucket"
 
-  server_ami_ID    = "ami-09d60d07ecd5c4424"
+  myBucket = "tonys-bottletube-bucket"
+
+  server_ami_ID    = "ami-0184316ae54baeb2a"
+  server_iam_role  = "LabInstanceProfile"
   server_sec_group = ["sg-0a763b59f550d1d80"]
 }
 
@@ -30,7 +31,7 @@ provider "aws" {
 
 # erstellt einen S3 Bucket
 resource "aws_s3_bucket" "bottletube_bucket" {
-  bucket = local.myBucket
+  bucket        = local.myBucket
   force_destroy = true
 }
 
@@ -61,6 +62,7 @@ resource "aws_s3_object" "assets_upload" {
 resource "aws_instance" "bottletube_ec2" {
   ami                    = local.server_ami_ID
   instance_type          = "t3.nano"
+  iam_instance_profile   = local.server_iam_role
   key_name               = local.my_aws_ssh_key
   vpc_security_group_ids = local.server_sec_group
   monitoring             = false

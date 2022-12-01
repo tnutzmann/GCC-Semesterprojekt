@@ -100,4 +100,4 @@ if __name__ == '__main__':
 
     # Needs to be customized
     # run(host='your_public_dns_name',
-    run(host=requests.get('http://169.254.169.254/latest/metadata/public-hostname').text, port=80)
+    run(host=requests.get('http://169.254.169.254/latest/meta-data/public-hostname').text, port=80)
