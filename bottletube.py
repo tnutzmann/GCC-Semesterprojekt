@@ -7,7 +7,7 @@ import requests
 import psycopg2
 import json
 
-from bottle import route, run, template, request
+from bottle import route, run, template, request, default_app
 from boto3 import resource, session
 
 HOSTNAME = requests.get('http://169.254.169.254/latest/meta-data/public-hostname').text
@@ -85,7 +85,7 @@ def do_upload_post():
     return template('upload_success.tpl', name='Upload Image')
 
 
-if __name__ == '__main__':
+if True:
     sm_session = session.Session()
     client = sm_session.client(service_name='secretsmanager', region_name='us-east-1')
 
@@ -101,6 +101,5 @@ if __name__ == '__main__':
     # Connect to S3
     s3_resource = resource('s3', region_name='us-east-1')
 
-    # Needs to be customized
-    # run(host='your_public_dns_name',
-    run(host=HOSTNAME, port=80)
+    os.chdir(os.path.dirname(__file__))
+    application = default_app()
