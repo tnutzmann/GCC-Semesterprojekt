@@ -10,7 +10,7 @@ import json
 from bottle import route, run, template, request
 from boto3 import resource, session
 
-HOSTNAME = ''
+HOSTNAME = requests.get('http://169.254.169.254/latest/meta-data/public-hostname').text
 PORT = 80
 BUCKET_NAME = 'tonys-bottletube-bucket'  # Replace with your bucket name
 SAVE_PATH = '/tmp/images/'
@@ -26,6 +26,9 @@ def home():
         items.append({'id': record[0], 'filename': record[1], 'category': record[2]})
     return template('home.tpl', name='BoTube Home', items=items)
 
+@route('/healthcheck')
+def healthcheck():
+    return('Here is '+ HOSTNAME +' and I feel lucky')
 
 @route('/upload', method='GET')
 def do_upload_get():
@@ -100,4 +103,4 @@ if __name__ == '__main__':
 
     # Needs to be customized
     # run(host='your_public_dns_name',
-    run(host=requests.get('http://169.254.169.254/latest/meta-data/public-hostname').text, port=80)
+    run(host=HOSTNAME, port=80)
