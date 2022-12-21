@@ -104,7 +104,7 @@ def options_handler(path = None):
     return
 
 @post('/api/pictures')
-def creation_handler():
+def post_handler():
     try:
         try:
             request_data = request.json()
@@ -154,7 +154,7 @@ def creation_handler():
     return json.dumps({'id':id, 'category':category, 'filename':f'user_uploads/{save_filename}'})
 
 @get('/api/pictures')
-def listing_handler():
+def get_all_handler():
     pictures = []
     cursor.execute('SELECT * FROM image_uploads ORDER BY id')
     for record in cursor.fetchall():
@@ -162,7 +162,7 @@ def listing_handler():
     return json.dumps(pictures)
 
 @get('/api/pictures/<id>')
-def listing_handler(id):
+def get_handler(id):
     pictures = []
     cursor.execute(f'SELECT * FROM image_uploads WHERE id={id}')
     for record in cursor.fetchall():
@@ -170,7 +170,7 @@ def listing_handler(id):
     return json.dumps(pictures)
 
 @put('/api/pictures/<id>')
-def update_handler(id):
+def put_handler(id):
     try:
         try:
             request_data = request.json()
