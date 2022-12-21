@@ -7,7 +7,7 @@ import requests
 import psycopg2
 import json
 
-from bottle import route,post, get, put, delete, run, template, request, response, default_app
+from bottle import route,post, get, put, delete, hook, run, template, request, response, default_app
 from boto3 import resource, session
 
 HOSTNAME = requests.get('http://169.254.169.254/latest/meta-data/public-hostname').text
@@ -15,6 +15,10 @@ PORT = 80
 BUCKET_NAME = 'tonys-bottletube-bucket'  # Replace with your bucket name
 SAVE_PATH = '/tmp/images/'
 secret_name = "RDS-Secrets"
+
+_allow_origin = '*'
+_allow_methods = 'PUT, GET, POST, DELETE, OPTIONS'
+_allow_headers = 'Authorization, Origin, Accept, Content-Type, X-Requested-With'
 
 @route('/home')
 @route('/')
@@ -85,6 +89,19 @@ def do_upload_post():
     return template('upload_success.tpl', name='Upload Image')
 
 # ------------------------------------------
+
+@hook('after_request')
+def enable_cors():
+    '''Add headers to enable CORS'''
+
+    response.headers['Access-Control-Allow-Origin'] = _allow_origin
+    response.headers['Access-Control-Allow-Methods'] = _allow_methods
+    response.headers['Access-Control-Allow-Headers'] = _allow_headers
+
+@route('/', method = 'OPTIONS')
+@route('/<path:path>', method = 'OPTIONS')
+def options_handler(path = None):
+    return
 
 @post('/api/pictures')
 def creation_handler():
