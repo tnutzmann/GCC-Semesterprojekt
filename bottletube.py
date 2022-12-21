@@ -161,6 +161,14 @@ def listing_handler():
         pictures.append({'id': record[0], 'filename': record[1], 'category': record[2]})
     return json.dumps(pictures)
 
+@get('/api/pictures/<id>')
+def listing_handler(id):
+    pictures = []
+    cursor.execute(f'SELECT * FROM image_uploads WHERE id={id}')
+    for record in cursor.fetchall():
+        pictures.append({'id': record[0], 'filename': record[1], 'category': record[2]})
+    return json.dumps(pictures)
+
 @put('/api/pictures/<id>')
 def update_handler(id):
     '''Handles name updates'''
