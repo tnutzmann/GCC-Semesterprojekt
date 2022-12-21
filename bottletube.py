@@ -145,14 +145,19 @@ def listing_handler():
     return json.dumps(pictures)
 
 @put('/api/pictures/<id>')
-def update_handler(name):
+def update_handler(id):
     '''Handles name updates'''
     pass
 
 @delete('/api/pictures/<id>')
-def delete_handler(name):
-    '''Handles name deletions'''
-    pass
+def delete_handler(id):
+    try:
+        cursor.execute(f'DELETE FROM image_uploads WHERE id={id}')
+    except:
+        response.status = 404
+        return
+    response.status = 200
+    return
 
 # ------------------------------------------
 
