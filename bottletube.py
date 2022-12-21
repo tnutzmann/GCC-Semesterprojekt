@@ -171,8 +171,53 @@ def listing_handler(id):
 
 @put('/api/pictures/<id>')
 def update_handler(id):
-    '''Handles name updates'''
-    pass
+    try:
+        try:
+            request_data = request.json()
+        except:
+            raise ValueError
+
+        if request_data is None:
+            raise ValueError
+
+        try:
+            category = request_data['category']
+            upload = request_data['file_upload']
+            
+            name, ext = os.path.splitext(upload.filename)
+            if ext not in ('.png', '.jpg', '.jpeg'):
+                raise TypeError
+
+            if not os.path.exists(SAVE_PATH):
+                os.makedirs(SAVE_PATH)
+            save_filename = f'{name}_{time.strftime("%Y%m%d-%H%M%S")}{ext}'
+            with open(f'{SAVE_PATH}{save_filename}', 'wb') as open_file:
+                open_file.write(upload.file.read())
+
+            if ext == '.png':
+                content_type = 'image/png'
+            else:
+                content_type = 'image/jpeg'
+
+            # Upload to S3
+            data = open(SAVE_PATH + save_filename, 'rb')
+            s3_resource.Bucket(BUCKET_NAME).put_object(Key=f'user_uploads/{save_filename}',Body=data,Metadata={'Content-Type': content_type},ACL='public-read')
+            # Write to DB
+            cursor.execute(f"UPDATE image_uploads SET url='user_uploads/{save_filename}', category='{category}' WHERE id={id};")
+            connection.commit()
+            id = connection.insert_id()
+
+
+        except (TypeError, KeyError):
+            raise ValueError
+
+    except ValueError:
+        response.status = 400
+        return
+
+    response.headers['Content-Type'] = 'application/json'
+    return json.dumps({'id':id, 'category':category, 'filename':f'user_uploads/{save_filename}'})
+
 
 @delete('/api/pictures/<id>')
 def delete_handler(id):
